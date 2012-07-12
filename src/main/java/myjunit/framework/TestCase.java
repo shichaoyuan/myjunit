@@ -78,7 +78,26 @@ public abstract class TestCase extends Assert implements Test {
 		}
 	}
 	
+	protected void setUp() throws Exception {
+		
+	}
 	
+	protected void tearDown() throws Exception {
+		
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return getName() + "(" + getClass().getName() + ")";
+	}
 	
 	
 	
