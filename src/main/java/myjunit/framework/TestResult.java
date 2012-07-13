@@ -70,6 +70,16 @@ public class TestResult {
 	}
 	
 	protected void run(final TestCase test) {
-		
+		startTest(test);
+		Protectable p = new Protectable() {
+			@Override
+			public void protect() throws Throwable {
+				test.runBare();
+			}
+		};
+		runProtected(test, p);
+		endTest(test);
 	}
+	
+	
 }
