@@ -15,7 +15,4 @@ public class AssertionFailedError extends AssertionError {
 		return message == null ? "" : message;
 	}
 	
-	
-
-	
 }

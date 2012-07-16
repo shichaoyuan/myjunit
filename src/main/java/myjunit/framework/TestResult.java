@@ -81,5 +81,41 @@ public class TestResult {
 		endTest(test);
 	}
 	
+	public synchronized int runCount() {
+		return runTests;
+	}
 	
+	public void runProtected(final Test test, Protectable p) {
+		try {
+			p.protect();
+		} catch (AssertionFailedError e) {
+			addFailure(test, e);
+		} catch (ThreadDeath e) {
+			throw e;
+		} catch (Throwable e) {
+			addError(test, e);
+		}
+	}
+	
+	public synchronized boolean shouldStop() {
+		return stop;
+	}
+	
+	public void startTest(Test test) {
+		final int count = test.countTestCases();
+		synchronized (this) {
+			runTests += count;
+		}
+		for (TestListener each : cloneListeners()) {
+			each.startTest(test);
+		}
+	}
+	
+	public synchronized void stop() {
+		stop = true;
+	}
+	
+	public synchronized boolean wasSuccessful() {
+		return failureCount() == 0 && errorCount() == 0;
+	}
 }
