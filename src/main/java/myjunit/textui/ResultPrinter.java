@@ -52,8 +52,8 @@ public class ResultPrinter implements TestListener {
 		} else {
 			getWriter().println("There were " + count + " " + type + "s:");
 		}
-		for (int i = 0; i < booBoo.size(); i++) {
-			printDefect(booBoo.get(i), i);
+		for (int i = 1; i <= booBoo.size(); i++) {
+			printDefect(booBoo.get(i-1), i);
 		}
 	}
 	

@@ -232,7 +232,7 @@ public abstract class BaseTestRunner implements TestListener {
 		} catch (Exception e) {
 			return stack;
 		}
-		return writer.toString();
+		return stringWriter.toString();
 	}
 
 	protected static boolean showStackRaw() {

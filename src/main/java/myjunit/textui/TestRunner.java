@@ -1,32 +1,151 @@
 package myjunit.textui;
 
+import java.io.IOException;
+import java.io.PrintStream;
+
 import myjunit.framework.Test;
+import myjunit.framework.TestCase;
+import myjunit.framework.TestResult;
+import myjunit.framework.TestSuite;
 import myjunit.runner.BaseTestRunner;
 
 public class TestRunner extends BaseTestRunner {
-
+	private ResultPrinter printer;
+	
+	public static final int SUCCESS_EXIT = 0;
+	public static final int FAILURE_EXIT = 1;
+	public static final int EXCEPTION_EXIT = 2;
+	
+	public TestRunner() {
+		this(System.out);
+	}
+	
+	public TestRunner(PrintStream writer) {
+		this(new ResultPrinter(writer));
+	}
+	
+	public TestRunner(ResultPrinter printer) {
+		this.printer = printer;
+	}
+	
+	static public void run(Class<? extends TestCase> testClass) {
+		run(new TestSuite(testClass));
+	}
+	
+	static public TestResult run(Test test) {
+		TestRunner runner = new TestRunner();
+		return runner.doRun(test);
+	}
+	
+	static public void runAndWait(Test suite) {
+		TestRunner runner = new TestRunner();
+		runner.doRun(suite, true);
+	}
+	
 	@Override
 	public void testStarted(String testName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void testEnded(String testName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void testFailed(int status, Test test, Throwable t) {
-		// TODO Auto-generated method stub
+	}
+	
+	protected TestResult createTestResult() {
+		return new TestResult();
+	}
+	
+	public TestResult doRun(Test test) {
+		return doRun(test, false);
+	}
+	
+	public TestResult doRun(Test suite, boolean wait) {
+		TestResult result = createTestResult();
+		result.addListener(printer);
+		long startTime = System.currentTimeMillis();
+		suite.run(result);
+		long endTime = System.currentTimeMillis();
+		long runTime = endTime - startTime;
+		printer.print(result, runTime);
 		
+		pause(wait);
+		return result;
+	}
+	
+	protected void pause(boolean wait) {
+		if (!wait)
+			return;
+		try {
+			System.in.read();
+		} catch (IOException e) {
+		}
+	}
+	
+	public static void main(String[] args) {
+		TestRunner runner = new TestRunner();
+		try {
+			TestResult result = runner.start(args);
+			if (!result.wasSuccessful()) {
+				System.exit(FAILURE_EXIT);
+			}
+			System.exit(SUCCESS_EXIT);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.exit(EXCEPTION_EXIT);
+		}
+	}
+	
+	public TestResult start(String[] args) throws Exception {
+		String testCase = "";
+		String method = "";
+		boolean wait = false;
+		
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-wait")) {
+				wait = true;
+			} else if (args[i].equals("-c")) {
+				testCase = extractClassName(args[++i]);
+			} else if (args[i].equals("-m")) {
+				String arg = args[++i];
+				int lastIndex = arg.lastIndexOf('.');
+				testCase = arg.substring(0, lastIndex);
+				method = arg.substring(lastIndex + 1);
+			} else if (args[i].equals("-v")) {
+				//System.err.println("JUnit " + Version.id() + " by Kent Beck and Erich Gamma");
+			} else {
+				testCase = args[i];
+			}
+		}
+		
+		if (testCase.equals(""))
+			throw new Exception("Usage: TestRunner [-wait] testCaseName, where name is the name of the TestCase class");
+
+		try {
+			if (!method.equals("")) 
+				return runSingleMethod(testCase, method, wait);
+			Test suite= getTest(testCase);
+			return doRun(suite, wait);
+		} catch (Exception e) {
+			throw new Exception("Could not create and run test suite: " + e);
+		}
+	}
+	
+	protected TestResult runSingleMethod(String testCase, String method, boolean wait) throws Exception {
+		Class<? extends TestCase> testClass= loadSuiteClass(testCase).asSubclass(TestCase.class);
+		Test test= TestSuite.createTest(testClass, method);
+		return doRun(test, wait);
 	}
 
 	@Override
 	protected void runFailed(String message) {
-		// TODO Auto-generated method stub
-		
+		System.err.println(message);
+		System.exit(FAILURE_EXIT);		
 	}
 
+	public void setPrinter(ResultPrinter printer) {
+		this.printer= printer;
+	}
 }

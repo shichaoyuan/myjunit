@@ -91,7 +91,7 @@ public class TestSuite implements Test {
 			return;
 		}
 		
-		if (Modifier.isPublic(clazz.getModifiers())) {
+		if (!Modifier.isPublic(clazz.getModifiers())) {
 			addTest(warning("Class " + clazz.getName() + " is not public"));
 			return;
 		}
