@@ -1,5 +1,10 @@
 package myjunit.runner;
-
+/**
+ * A listener interface for observing the
+ * execution of a test run. Unlike TestListener,
+ * this interface using only primitive objects,
+ * making it suitable for remote test execution.
+ */
 public interface TestRunListener {
 	
 	public static final int STATUS_ERROR = 1;

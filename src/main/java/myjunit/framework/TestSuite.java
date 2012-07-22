@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestSuite implements Test {
-	
+
 	private String testClassName;
 	private List<Test> tests = new ArrayList<Test>();
-	
+
 	public TestSuite() {
 	}
 	public TestSuite(final Class<?> clazz) {
@@ -26,26 +26,24 @@ public class TestSuite implements Test {
 	public TestSuite(String name) {
 		setTestClassName(name);
 	}
-	
 	public TestSuite(Class<?>... classes) {
 		for (Class<?> clazz : classes) {
 			addTest(testCaseForClass(clazz));
 		}
 	}
-	
 	public TestSuite(Class<? extends TestCase>[] classes, String name) {
 		this(classes);
 		setTestClassName(name);
 	}
-	
+
 	public void addTest(Test test) {
 		tests.add(test);
 	}
-	
+
 	public void addTestSuite(Class<? extends TestCase> clazz) {
 		addTest(new TestSuite(clazz));
 	}
-	
+
 	private void addTestMethod(Method m, List<String> names, Class<?> clazz) {
 		String name = m.getName();
 		if (names.contains(name)) {
@@ -53,46 +51,50 @@ public class TestSuite implements Test {
 		}
 		if (!isPublicTestMethod(m)) {
 			if (isTestMethod(m)) {
-				addTest(warning("Test method isn't public: " + m.getName() + " (" + clazz.getCanonicalName() + ")"));
+				addTest(warning("Test method isn't public: " + m.getName()
+						+ " (" + clazz.getCanonicalName() + ")"));
 			}
 			return;
 		}
 		names.add(name);
 		addTest(createTest(clazz, name));
 	}
-	
+
 	private boolean isPublicTestMethod(Method m) {
 		return isTestMethod(m) && Modifier.isPublic(m.getModifiers());
 	}
-	
+
 	private boolean isTestMethod(Method m) {
-		return m.getParameterTypes().length == 0 &&
-				m.getName().startsWith("test") &&
-				m.getReturnType().equals(Void.TYPE);
+		return m.getParameterTypes().length == 0
+				&& m.getName().startsWith("test")
+				&& m.getReturnType().equals(Void.TYPE);
 	}
-	
+
 	private Test testCaseForClass(Class<?> clazz) {
 		if (TestCase.class.isAssignableFrom(clazz)) {
 			return new TestSuite(clazz.asSubclass(TestCase.class));
 		} else {
-			return warning(clazz.getCanonicalName() + "does not extend TestCase");
+			return warning(clazz.getCanonicalName()
+					+ " does not extend TestCase");
 		}
 	}
-	
+
 	private void addTestsFromTestCase(final Class<?> clazz) {
 		testClassName = clazz.getName();
 		try {
 			getTestConstructor(clazz);
 		} catch (NoSuchMethodException e) {
-			addTest(warning("Class " + clazz.getName() + " has no public constructor TestCase(String name) or TestCase()"));
+			addTest(warning("Class "
+					+ clazz.getName()
+					+ " has no public constructor TestCase(String name) or TestCase()"));
 			return;
 		}
-		
+
 		if (!Modifier.isPublic(clazz.getModifiers())) {
 			addTest(warning("Class " + clazz.getName() + " is not public"));
 			return;
 		}
-		
+
 		Class<?> superClazz = clazz;
 		List<String> names = new ArrayList<String>();
 		while (Test.class.isAssignableFrom(superClazz)) {
@@ -126,11 +128,14 @@ public class TestSuite implements Test {
 				test = constructor.newInstance(new Object[] { name });
 			}
 		} catch (InstantiationException e) {
-			return warning("Cannot instantiate test case: " + name + " (" + exceptionToString(e) + ")");
+			return warning("Cannot instantiate test case: " + name + " ("
+					+ exceptionToString(e) + ")");
 		} catch (InvocationTargetException e) {
-			return warning("Exception in constructor: " + name + " (" + exceptionToString(e.getTargetException()) + ")");
+			return warning("Exception in constructor: " + name + " ("
+					+ exceptionToString(e.getTargetException()) + ")");
 		} catch (IllegalAccessException e) {
-			return warning("Cannot access test case: " + name + " (" + exceptionToString(e) + ")");
+			return warning("Cannot access test case: " + name + " ("
+					+ exceptionToString(e) + ")");
 		}
 		return (Test) test;
 	}
@@ -143,27 +148,27 @@ public class TestSuite implements Test {
 		}
 		return clazz.getConstructor(new Class[0]);
 	}
-	
+
 	public static Test warning(final String message) {
-		return new TestCase("warning" ) {
+		return new TestCase("warning") {
 			@Override
 			public void runTest() {
 				fail(message);
 			}
 		};
 	}
-	
+
 	private static String exceptionToString(Throwable t) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		t.printStackTrace(printWriter);
 		return stringWriter.toString();
 	}
-	
+
 	public void runTest(Test test, TestResult result) {
 		test.run(result);
 	}
-	
+
 	@Override
 	public void run(TestResult result) {
 		for (Test test : tests) {
@@ -179,10 +184,9 @@ public class TestSuite implements Test {
 		for (Test test : tests) {
 			count += test.countTestCases();
 		}
- 		return count;
+		return count;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		if (getTestClassName() != null) {
@@ -190,10 +194,11 @@ public class TestSuite implements Test {
 		}
 		return super.toString();
 	}
-	
+
 	private void setTestClassName(String testClassName) {
 		this.testClassName = testClassName;
 	}
+
 	private String getTestClassName() {
 		return testClassName;
 	}

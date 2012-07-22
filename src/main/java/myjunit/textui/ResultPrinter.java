@@ -37,11 +37,11 @@ public class ResultPrinter implements TestListener {
 	}
 	
 	protected void printErrors(TestResult result) {
-		printDefects(result.errors(), result.errorCount(), "error");
+		printDefects(result.getErrors(), result.errorCount(), "error");
 	}
 	
 	protected void printFailures(TestResult result) {
-		printDefects(result.failures(), result.failureCount(), "failure");
+		printDefects(result.getFailures(), result.failureCount(), "failure");
 	}
 	
 	protected void printDefects(List<TestFailure> booBoo, int count, String type) {
@@ -63,7 +63,7 @@ public class ResultPrinter implements TestListener {
 	}
 	
 	protected void printDefectHeader(TestFailure booBoo, int count) {
-		getWriter().print(count + ") " + booBoo.failedTest());
+		getWriter().print(count + ") " + booBoo.getFailedTest());
 	}
 	
 	protected void printDefectTrace(TestFailure booBoo) {
@@ -74,11 +74,11 @@ public class ResultPrinter implements TestListener {
 		if (result.wasSuccessful()) {
 			getWriter().println();
 			getWriter().print("OK");
-			getWriter().println(" (" + result.runCount() + " test" + (result.runCount() == 1 ? "" : "s") + ")");
+			getWriter().println(" (" + result.getRunTestCount() + " test" + (result.getRunTestCount() == 1 ? "" : "s") + ")");
 		} else {
 			getWriter().println();
 			getWriter().println("FAILURES!!!");
-			getWriter().println("Test run: " + result.runCount() +
+			getWriter().println("Test run: " + result.getRunTestCount() +
 					", Failures: " + result.failureCount() +
 					", Errors: " + result.errorCount());
 		}

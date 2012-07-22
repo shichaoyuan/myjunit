@@ -53,11 +53,8 @@ public abstract class BaseTestRunner implements TestListener {
 	}
 
 	public abstract void testStarted(String testName);
-
 	public abstract void testEnded(String testName);
-
 	public abstract void testFailed(int status, Test test, Throwable t);
-
 	protected abstract void runFailed(String message);
 
 	public Test getTest(String suiteClassName) {
@@ -107,30 +104,6 @@ public abstract class BaseTestRunner implements TestListener {
 		return test;
 	}
 
-	protected String processArguments(String[] args) {
-		String suiteName = null;
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-noloading")) {
-				setLoading(false);
-			} else if (args[i].equals("-nofilterstack")) {
-				filterStack = false;
-			} else if (args[i].equals("-c")) {
-				if (args.length > i + 1) {
-					suiteName = extractClassName(args[i + 1]);
-				} else {
-					System.out.println("Missing Test class name");
-				}
-				i++;
-			} else {
-				suiteName = args[i];
-			}
-		}
-		return suiteName;
-	}
-
-	public void setLoading(boolean enable) {
-		loading = enable;
-	}
 
 	public String extractClassName(String className) {
 		if (className.startsWith("Default package for")) {
@@ -147,61 +120,8 @@ public abstract class BaseTestRunner implements TestListener {
 	protected void clearStatus() {
 	}
 
-	protected boolean useReloadingTestSuiteLoader() {
-		return getPreference("loading").equals("true") && loading;
-	}
 
-	protected static void setPreferences(Properties p) {
-		preferences = p;
-	}
-
-	protected static Properties getPreferences() {
-		if (preferences == null) {
-			preferences = new Properties();
-			preferences.put("loading", "true");
-			preferences.put("filterstack", "true");
-			readPreferences();
-		}
-		return preferences;
-	}
-
-	private static void readPreferences() {
-		InputStream is = null;
-		try {
-			is = new FileInputStream(getPreferencesFile());
-			setPreferences(new Properties(getPreferences()));
-			getPreferences().load(is);
-		} catch (IOException e) {
-			try {
-				if (is != null) {
-					is.close();
-				}
-			} catch (IOException e1) {
-			}
-		}
-	}
-
-	private static File getPreferencesFile() {
-		String home = System.getProperty("user.home");
-		return new File(home, "myjunit.properties");
-	}
-
-	public static String getPreference(String key) {
-		return getPreferences().getProperty(key);
-	}
-
-	public static int getPreference(String key, int dlft) {
-		String value = getPreference(key);
-		int intValue = dlft;
-		if (value == null) {
-			return dlft;
-		}
-		try {
-			intValue = Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-		}
-		return intValue;
-	}
+	
 
 	public static String getFilteredTrace(Throwable t) {
 		StringWriter stringWriter = new StringWriter();
@@ -270,6 +190,58 @@ public abstract class BaseTestRunner implements TestListener {
 
 	public static void setPreference(String key, String value) {
 		getPreferences().put(key, value);
+	}
+	
+	protected static void setPreferences(Properties p) {
+		preferences = p;
+	}
+
+	protected static Properties getPreferences() {
+		if (preferences == null) {
+			preferences = new Properties();
+			preferences.put("loading", "true");
+			preferences.put("filterstack", "true");
+			readPreferences();
+		}
+		return preferences;
+	}
+
+	private static void readPreferences() {
+		InputStream is = null;
+		try {
+			is = new FileInputStream(getPreferencesFile());
+			setPreferences(new Properties(getPreferences()));
+			getPreferences().load(is);
+		} catch (IOException e) {
+			try {
+				if (is != null) {
+					is.close();
+				}
+			} catch (IOException e1) {
+			}
+		}
+	}
+
+	private static File getPreferencesFile() {
+		String home = System.getProperty("user.home");
+		return new File(home, "myjunit.properties");
+	}
+
+	public static String getPreference(String key) {
+		return getPreferences().getProperty(key);
+	}
+
+	public static int getPreference(String key, int dlft) {
+		String value = getPreference(key);
+		int intValue = dlft;
+		if (value == null) {
+			return dlft;
+		}
+		try {
+			intValue = Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+		}
+		return intValue;
 	}
 
 }

@@ -2,19 +2,27 @@ package myjunit.framework;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * A <code>TestResult</code> collects the results of executing
+ * a test case. It is an instance of the Collecting Parameter pattern.
+ * The test framework distinguishes between <i>failures</i> and <i>errors</i>.
+ * A failure is anticipated and checked for with assertions. Errors are
+ * unanticipated problems like an {@link ArrayIndexOutOfBoundsException}.
+ *
+ * @see Test
+ */
 public class TestResult {
 	protected List<TestFailure> failures;
 	protected List<TestFailure> errors;
 	protected List<TestListener> listeners;
-	protected int runTests;
+	protected int runTestCount;
 	private boolean stop;
 	
 	public TestResult() {
 		this.failures = new ArrayList<TestFailure>();
 		this.errors = new ArrayList<TestFailure>();
 		this.listeners = new ArrayList<TestListener>();
-		this.runTests = 0;
+		this.runTestCount = 0;
 		this.stop = false;
 	}
 	
@@ -23,9 +31,7 @@ public class TestResult {
 		for (TestListener each : listeners) {
 			each.addError(test, t);
 		}
-		
 	}
-	
 	public synchronized void addFailure(Test test, AssertionFailedError t) {
 		failures.add(new TestFailure(test, t));
 		for (TestListener each : listeners) {
@@ -36,7 +42,6 @@ public class TestResult {
 	public synchronized void addListener(TestListener listener) {
 		listeners.add(listener);
 	}
-	
 	public synchronized void removeListener(TestListener listener) {
 		listeners.remove(listener);
 	}
@@ -45,6 +50,16 @@ public class TestResult {
 		List<TestListener> result = new ArrayList<TestListener>();
 		result.addAll(listeners);
 		return result;
+	}
+	
+	public void startTest(Test test) {
+		final int count = test.countTestCases();
+		synchronized (this) {
+			runTestCount += count;
+		}
+		for (TestListener each : cloneListeners()) {
+			each.startTest(test);
+		}
 	}
 	
 	public void endTest(Test test) {
@@ -57,7 +72,7 @@ public class TestResult {
 		return errors.size();
 	}
 	
-	public synchronized List<TestFailure> errors() {
+	public synchronized List<TestFailure> getErrors() {
 		return errors;
 	}
 	
@@ -65,8 +80,12 @@ public class TestResult {
 		return failures.size();
 	}
 	
-	public synchronized List<TestFailure> failures() {
+	public synchronized List<TestFailure> getFailures() {
 		return failures;
+	}
+	
+	public synchronized int getRunTestCount() {
+		return runTestCount;
 	}
 	
 	protected void run(final TestCase test) {
@@ -79,10 +98,6 @@ public class TestResult {
 		};
 		runProtected(test, p);
 		endTest(test);
-	}
-	
-	public synchronized int runCount() {
-		return runTests;
 	}
 	
 	public void runProtected(final Test test, Protectable p) {
@@ -99,16 +114,6 @@ public class TestResult {
 	
 	public synchronized boolean shouldStop() {
 		return stop;
-	}
-	
-	public void startTest(Test test) {
-		final int count = test.countTestCases();
-		synchronized (this) {
-			runTests += count;
-		}
-		for (TestListener each : cloneListeners()) {
-			each.startTest(test);
-		}
 	}
 	
 	public synchronized void stop() {

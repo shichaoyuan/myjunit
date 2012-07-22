@@ -2,8 +2,6 @@ package myjunit.framework;
 
 public class ComparisonFailure extends AssertionFailedError {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final int MAX_CONTEXT_LENGTH = 20;
 	
 	private String expected;
