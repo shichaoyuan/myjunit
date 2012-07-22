@@ -11,23 +11,20 @@ import java.util.List;
 
 public class TestSuite implements Test {
 	
-	private String name;
+	private String testClassName;
 	private List<Test> tests = new ArrayList<Test>();
 	
 	public TestSuite() {
 	}
-	
 	public TestSuite(final Class<?> clazz) {
 		addTestsFromTestCase(clazz);
 	}
-	
 	public TestSuite(Class<? extends TestCase> clazz, String name) {
 		this(clazz);
-		setName(name);
+		setTestClassName(name);
 	}
-	
 	public TestSuite(String name) {
-		setName(name);
+		setTestClassName(name);
 	}
 	
 	public TestSuite(Class<?>... classes) {
@@ -38,7 +35,7 @@ public class TestSuite implements Test {
 	
 	public TestSuite(Class<? extends TestCase>[] classes, String name) {
 		this(classes);
-		setName(name);
+		setTestClassName(name);
 	}
 	
 	public void addTest(Test test) {
@@ -83,7 +80,7 @@ public class TestSuite implements Test {
 	}
 	
 	private void addTestsFromTestCase(final Class<?> clazz) {
-		name = clazz.getName();
+		testClassName = clazz.getName();
 		try {
 			getTestConstructor(clazz);
 		} catch (NoSuchMethodException e) {
@@ -123,7 +120,7 @@ public class TestSuite implements Test {
 			if (constructor.getParameterTypes().length == 0) {
 				test = constructor.newInstance(new Object[0]);
 				if (test instanceof TestCase) {
-					((TestCase) test).setName(name);
+					((TestCase) test).setTestMethodName(name);
 				}
 			} else {
 				test = constructor.newInstance(new Object[] { name });
@@ -167,26 +164,6 @@ public class TestSuite implements Test {
 		test.run(result);
 	}
 	
-	public Test testAt(int index) {
-		return tests.get(index);
-	}
-	
-	public int testCount() {
-		return tests.size();
-	}
-	
-	public List<Test> tests() {
-		return tests;
-	}
-	
-	@Override
-	public String toString() {
-		if (getName() != null) {
-			return getName();
-		}
-		return super.toString();
-	}
-
 	@Override
 	public void run(TestResult result) {
 		for (Test test : tests) {
@@ -205,12 +182,20 @@ public class TestSuite implements Test {
  		return count;
 	}
 	
-	private void setName(String name) {
-		this.name = name;
+	
+	@Override
+	public String toString() {
+		if (getTestClassName() != null) {
+			return getTestClassName();
+		}
+		return super.toString();
 	}
 	
-	private String getName() {
-		return name;
+	private void setTestClassName(String testClassName) {
+		this.testClassName = testClassName;
+	}
+	private String getTestClassName() {
+		return testClassName;
 	}
 
 }

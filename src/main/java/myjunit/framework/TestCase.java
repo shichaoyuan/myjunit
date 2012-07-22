@@ -6,14 +6,14 @@ import java.lang.reflect.Modifier;
 
 public abstract class TestCase extends Assert implements Test {
 
-	private String name;
+	private String testMethodName;
 	
 	public TestCase() {
-		name = null;
+		testMethodName = null;
 	}
 	
-	public TestCase(String name) {
-		this.name = name;
+	public TestCase(String testMethodName) {
+		this.testMethodName = testMethodName;
 	}
 
 	@Override
@@ -24,16 +24,6 @@ public abstract class TestCase extends Assert implements Test {
 	@Override
 	public int countTestCases() {
 		return 1;
-	}
-	
-	protected TestResult createResult() {
-		return new TestResult();
-	}
-	
-	public TestResult run() {
-		TestResult result = createResult();
-		run(result);
-		return result;
 	}
 	
 	public void runBare() throws Throwable {
@@ -56,15 +46,15 @@ public abstract class TestCase extends Assert implements Test {
 	}
 	
 	protected void runTest() throws Throwable {
-		assertNotNull("TestCase.name cannot be null", name);
+		assertNotNull("TestCase.testMethodName cannot be null", testMethodName);
 		Method runMethod = null;
 		try {
-			runMethod = getClass().getMethod(name, (Class[])null);
+			runMethod = getClass().getMethod(testMethodName, new Class[0]);
 		} catch (NoSuchMethodException e) {
-			fail("Method \"" + name + "\" not found");
+			fail("Method \"" + testMethodName + "\" not found");
 		}
 		if (!Modifier.isPublic(runMethod.getModifiers())) {
-			fail("Method \"" + name + "\" should be public");
+			fail("Method \"" + testMethodName + "\" should be public");
 		}
 		
 		try {
@@ -78,27 +68,23 @@ public abstract class TestCase extends Assert implements Test {
 		}
 	}
 	
-	protected void setUp() throws Exception {
-		
-	}
 	
-	protected void tearDown() throws Exception {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Override
 	public String toString() {
-		return getName() + "(" + getClass().getName() + ")";
+		return getTestMethodName() + "(" + getClass().getName() + ")";
+	}
+
+	
+	protected void setUp() throws Exception {	
+	}
+	protected void tearDown() throws Exception {	
 	}
 	
 	
-	
+	public String getTestMethodName() {
+		return testMethodName;
+	}
+	public void setTestMethodName(String testMethodName) {
+		this.testMethodName = testMethodName;
+	}
 }
