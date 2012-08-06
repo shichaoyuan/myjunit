@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TestSuite implements Test {
 
 	private String testClassName;
@@ -194,12 +195,20 @@ public class TestSuite implements Test {
 		}
 		return super.toString();
 	}
+	
+	public int getTestsCount() {
+		return tests.size();
+	}
+	
+	public Test testAt(int index) {
+		return tests.get(index);
+	}
 
-	private void setTestClassName(String testClassName) {
+	public void setTestClassName(String testClassName) {
 		this.testClassName = testClassName;
 	}
 
-	private String getTestClassName() {
+	public String getTestClassName() {
 		return testClassName;
 	}
 
