@@ -16,12 +16,10 @@ public abstract class TestCase extends Assert implements Test {
 		this.testMethodName = testMethodName;
 	}
 
-	@Override
 	public void run(TestResult result) {
 		result.run(this);
 	}
 
-	@Override
 	public int countTestCases() {
 		return 1;
 	}
