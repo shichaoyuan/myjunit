@@ -170,7 +170,6 @@ public class TestSuite implements Test {
 		test.run(result);
 	}
 
-	@Override
 	public void run(TestResult result) {
 		for (Test test : tests) {
 			if (result.shouldStop())
@@ -179,7 +178,6 @@ public class TestSuite implements Test {
 		}
 	}
 
-	@Override
 	public int countTestCases() {
 		int count = 0;
 		for (Test test : tests) {

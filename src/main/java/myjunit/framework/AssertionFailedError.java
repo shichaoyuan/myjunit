@@ -2,6 +2,11 @@ package myjunit.framework;
 
 public class AssertionFailedError extends AssertionError {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2763997095326842839L;
+
 	public AssertionFailedError() {
 	}
 

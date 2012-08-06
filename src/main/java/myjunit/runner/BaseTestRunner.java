@@ -32,22 +32,18 @@ public abstract class BaseTestRunner implements TestListener {
 		maxMessageLength = getPreference("maxmessage", maxMessageLength);
 	}
 
-	@Override
 	public synchronized void startTest(Test test) {
 		testStarted(test.toString());
 	}
 
-	@Override
 	public synchronized void endTest(Test test) {
 		testEnded(test.toString());
 	}
 
-	@Override
 	public synchronized void addError(Test test, Throwable t) {
 		testFailed(TestRunListener.STATUS_ERROR, test, t);
 	}
 
-	@Override
 	public synchronized void addFailure(Test test, AssertionFailedError t) {
 		testFailed(TestRunListener.STATUS_FAILURE, test, t);
 	}

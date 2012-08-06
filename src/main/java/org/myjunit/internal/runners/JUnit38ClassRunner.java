@@ -31,14 +31,12 @@ public class JUnit38ClassRunner extends Runner implements Filterable, Sortable {
 		setTest(test);
 	}
 
-	@Override
 	public void run(RunNotifier notifier) {
 		TestResult result = new TestResult();
 		result.addListener(createAdaptingListener(notifier));
 		getTest().run(result);
 	}
 
-	@Override
 	public Description getDescription() {
 		return makeDescription(getTest());
 	}
@@ -97,23 +95,19 @@ public class JUnit38ClassRunner extends Runner implements Filterable, Sortable {
 			this.notifier = notifier;
 		}
 
-		@Override
 		public void addError(Test test, Throwable t) {
 			Failure failure = new Failure(asDescription(test), t);
 			notifier.fireTestFailure(failure);
 		}
 
-		@Override
 		public void addFailure(Test test, AssertionFailedError t) {
 			addError(test, t);
 		}
 
-		@Override
 		public void endTest(Test test) {
 			notifier.fireTestFinished(asDescription(test));
 		}
 
-		@Override
 		public void startTest(Test test) {
 			notifier.fireTestStarted(asDescription(test));
 		}

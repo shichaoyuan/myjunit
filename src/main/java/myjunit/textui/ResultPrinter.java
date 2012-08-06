@@ -94,22 +94,18 @@ public class ResultPrinter implements TestListener {
 		return this.writer;
 	}
 
-	@Override
 	public void addError(Test test, Throwable t) {
 		getWriter().print("E");
 	}
 
-	@Override
 	public void addFailure(Test test, AssertionFailedError t) {
 		getWriter().print("F");
 	}
 
-	@Override
 	public void endTest(Test test) {
 
 	}
 
-	@Override
 	public void startTest(Test test) {
 		getWriter().print(".");
 		if (column++ >= 40) {
